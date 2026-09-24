@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>[hidden]{display:none!important}</style>
+<title>調理穴位圖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#EEF2EE;--surface:#FFFFFF;--ink:#1C2723;--muted:#5E6C66;--line:#D3DCD6;
+  --jade:#2E6955;--jade-soft:#DFEBE4;--seal:#B3362B;--seal-soft:#F6E2DE;
+  --amber:#A26A0E;--amber-soft:#F5EBD6;--dim:#B9C3BE;
+  --stage:#E9ECEA;--stage-hi:#FFFFFF;--shadow:#3A4D44;
+  --holo-bg:#020B12;--holo-bg2:#0B2536;--holo-line:#7FE6FF;--holo-ui:rgba(8,30,44,.88);--holo-ui-line:#1E4C66;--holo-text:#BDEFFF;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#111715;--surface:#19211E;--ink:#E3EBE6;--muted:#98A69F;--line:#2B3632;
+    --jade:#7FBAA3;--jade-soft:#1E2F28;--seal:#EE7B6B;--seal-soft:#3A2320;
+    --amber:#DDAF55;--amber-soft:#332915;--dim:#3E4A45;
+    --stage:#141C19;--stage-hi:#22302B;--shadow:#000000;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#111715;--surface:#19211E;--ink:#E3EBE6;--muted:#98A69F;--line:#2B3632;
+  --jade:#7FBAA3;--jade-soft:#1E2F28;--seal:#EE7B6B;--seal-soft:#3A2320;
+  --amber:#DDAF55;--amber-soft:#332915;--dim:#3E4A45;
+  --stage:#141C19;--stage-hi:#22302B;--shadow:#000000;
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.7;padding-inline:16px;padding-block:28px 64px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--serif);margin:0;line-height:1.3;text-wrap:balance}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--jade);outline-offset:2px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px 32px}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--jade)}
+h1{font-size:clamp(1.9rem,5vw,2.7rem);font-weight:900;margin-top:4px}
+.sub{color:var(--muted);max-width:52ch}
+
+/* app */
+.app{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
+.stage{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);height:min(720px,calc(100vh - 32px));min-height:520px;border-radius:10px;overflow:hidden;
+  background:radial-gradient(ellipse 70% 62% at 50% 40%,var(--holo-bg2),var(--holo-bg));border:1px solid var(--holo-ui-line)}
+#cv{display:block;width:100%;height:100%;touch-action:pan-y;cursor:grab}
+#cv.drag{cursor:grabbing}
+#cv.hover{cursor:pointer}
+.controls{position:absolute;left:12px;right:12px;bottom:12px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.controls button{background:var(--holo-ui);border:1px solid var(--holo-ui-line);color:var(--holo-text);border-radius:999px;padding:5px 14px;font-size:.85rem}
+.controls button[aria-pressed="true"]{background:var(--holo-line);color:#03202C;border-color:var(--holo-line)}
+.controls .ic{width:34px;padding:5px 0;font-family:var(--mono)}
+.hint{position:absolute;top:12px;right:14px;font-size:.78rem;color:var(--holo-text);opacity:.7;pointer-events:none}
+.pin{position:absolute;pointer-events:none;transform:translate(-50%,calc(-100% - 16px));background:var(--holo-line);color:#03202C;font-family:var(--serif);font-weight:700;font-size:.95rem;
+  padding:3px 10px;border-radius:4px;white-space:nowrap}
+.pin::after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:var(--holo-line)}
+.tip{position:absolute;pointer-events:none;background:var(--holo-ui);color:var(--holo-text);border:1px solid var(--holo-ui-line);font-size:.82rem;padding:2px 8px;border-radius:4px;transform:translate(12px,-120%)}
+.loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--holo-text);font-size:.9rem;pointer-events:none}
+.nogl{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--holo-text)}
+
+.panel{display:flex;flex-direction:column;gap:18px}
+.goals{display:flex;flex-wrap:wrap;gap:6px}
+.goals button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:4px 13px;font-size:.88rem}
+.goals button[aria-pressed="true"]{background:var(--jade);border-color:var(--jade);color:var(--surface)}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:6px}
+.pbtn{display:flex;flex-direction:column;align-items:flex-start;gap:0;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:7px 10px;transition:opacity .2s,border-color .2s}
+.pbtn b{font-family:var(--serif);font-size:1.02rem;display:flex;align-items:center;gap:6px}
+.pbtn b::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--seal);flex:none}
+.pbtn.caution b::before{background:var(--amber)}
+.pbtn small{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
+.pbtn.dim{opacity:.4}
+.pbtn[aria-current="true"]{border-color:var(--seal);box-shadow:inset 0 0 0 1px var(--seal)}
+
+.detail{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.d-head{display:flex;justify-content:space-between;align-items:start;gap:12px;flex-wrap:wrap}
+.d-head h2{font-size:1.9rem;font-weight:900}
+.d-meta{font-size:.85rem;color:var(--muted)}
+.chips{display:flex;gap:4px;flex-wrap:wrap}
+.chip{font-size:.75rem;background:var(--jade-soft);color:var(--jade);padding:2px 9px;border-radius:999px;font-weight:500}
+.alert{background:var(--amber-soft);border-left:3px solid var(--amber);padding:10px 14px;border-radius:0 4px 4px 0;font-size:.92rem}
+.warn{background:var(--seal-soft);border-left:3px solid var(--seal);padding:10px 14px;border-radius:0 4px 4px 0;font-size:.92rem}
+.d-list{margin:0;display:flex;flex-direction:column;gap:10px}
+.d-list dt{font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.06em}
+.d-list dd{margin:0}
+.empty{color:var(--muted)}
+
+.timer{display:flex;align-items:center;gap:14px;border-top:1px solid var(--line);padding-top:14px;flex-wrap:wrap}
+.timer svg{width:52px;height:52px;flex:none;transform:rotate(-90deg)}
+.timer .tr-bg{fill:none;stroke:var(--jade-soft);stroke-width:4}
+.timer .tr-fg{fill:none;stroke:var(--seal);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .25s linear}
+.t-txt{flex:1;min-width:150px;display:flex;flex-direction:column}
+.t-time{font-family:var(--mono);font-size:1.3rem;font-variant-numeric:tabular-nums}
+.t-cue{font-size:.82rem;color:var(--muted)}
+.t-btn{background:var(--seal);color:var(--surface);border:0;border-radius:999px;padding:7px 18px;font-weight:500}
+.t-btn.on{background:var(--ink);color:var(--ground)}
+
+/* routines */
+section{display:flex;flex-direction:column;gap:16px}
+section h2{font-size:1.45rem;font-weight:700;display:flex;gap:12px;align-items:baseline}
+section h2 .en{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:400}
+.routines{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.rt{border-top:2px solid var(--jade);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+.rt h3{font-size:1.05rem}
+.rt p{font-size:.88rem;color:var(--muted)}
+.rt .links{display:flex;gap:6px;flex-wrap:wrap}
+.rt .links button{border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:1px 10px;font-family:var(--serif);font-weight:700;font-size:.92rem}
+.rt .links button:hover{border-color:var(--seal);color:var(--seal)}
+ul.safe{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px 28px}
+ul.safe li{padding-left:18px;position:relative}
+ul.safe li::before{content:"";position:absolute;left:0;top:.72em;width:8px;height:2px;background:var(--seal)}
+footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+
+@media (max-width:820px){
+  .app{grid-template-columns:1fr}
+  .stage{position:relative;top:0;height:470px;min-height:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <div class="eyebrow">Acupressure Map</div>
+    <h1>調理穴位圖</h1>
+  </div>
+  <p class="sub">依你的處方方向（健脾補氣、安神、疏肝、溫陽利濕）挑出的保健穴位。拖曳旋轉人體，點亮點看位置、找法和按法。</p>
+</header>
+
+<div class="app">
+  <div class="stage" id="stage">
+    <canvas id="cv" aria-label="可旋轉的立體人體穴位圖，點選紅點查看穴位"></canvas>
+    <p class="hint">拖曳旋轉 · 滾輪縮放 · 點亮點看說明</p>
+    <div class="pin" id="pin" hidden></div>
+    <div class="tip" id="tip" hidden></div>
+    <div class="controls">
+      <button id="bFront" type="button">正面</button>
+      <button id="bBack" type="button">背面</button>
+      <button id="bAll" type="button">看全身</button>
+      <button id="bSpin" type="button" aria-pressed="false">自動旋轉</button>
+      <button id="bIn" class="ic" type="button" aria-label="放大">+</button>
+      <button id="bOut" class="ic" type="button" aria-label="縮小">−</button>
+    </div>
+    <p class="loading" id="loading">正在雕塑人體模型…</p>
+    <p class="nogl" id="nogl" hidden>這個瀏覽器無法顯示 3D 人體。右側清單仍可點選，查看每個穴位的位置與按法。</p>
+  </div>
+
+  <aside class="panel">
+    <div class="goals" id="goals" role="group" aria-label="依調理目標篩選">
+      <button type="button" data-goal="all" aria-pressed="true">全部</button>
+      <button type="button" data-goal="qi" aria-pressed="false">健脾補氣</button>
+      <button type="button" data-goal="calm" aria-pressed="false">安神定悸</button>
+      <button type="button" data-goal="liver" aria-pressed="false">疏肝解壓</button>
+      <button type="button" data-goal="warm" aria-pressed="false">溫陽利濕</button>
+    </div>
+    <div class="plist" id="plist"></div>
+    <article class="detail" id="detail" aria-live="polite"></article>
+  </aside>
+</div>
+
+<section>
+  <h2>一天的按壓安排 <span class="en">Daily routine</span></h2>
+  <div class="routines">
+    <div class="rt"><h3>上午・起床後</h3><p>健脾補氣，避開 10 點服藥前後的飯後一小時。</p><div class="links"><button type="button" data-go="zusanli">足三里</button><button type="button" data-go="sanyinjiao">三陰交</button></div></div>
+    <div class="rt"><h3>下午疲倦時</h3><p>提神、補氣，適合下午 4 點服藥前。</p><div class="links"><button type="button" data-go="baihui">百會</button><button type="button" data-go="qihai">氣海</button></div></div>
+    <div class="rt"><h3>壓力大、煩躁時</h3><p>疏肝解鬱，也能緩解胸悶。</p><div class="links"><button type="button" data-go="taichong">太衝</button><button type="button" data-go="neiguan">內關</button></div></div>
+    <div class="rt"><h3>睡前</h3><p>安神定悸，幫助入睡。</p><div class="links"><button type="button" data-go="shenmen">神門</button><button type="button" data-go="neiguan">內關</button><button type="button" data-go="sanyinjiao">三陰交</button></div></div>
+    <div class="rt"><h3>怕冷、手腳冰冷</h3><p>以熱敷為主，溫陽散寒。</p><div class="links"><button type="button" data-go="guanyuan">關元</button><button type="button" data-go="shenshu">腎俞</button></div></div>
+  </div>
+</section>
+
+<section>
+  <h2>按壓前先看 <span class="en">Safety</span></h2>
+  <ul class="safe">
+    <li>飯後 1 小時內、太餓、太飽或剛運動完，先不要按。</li>
+    <li>力道以「微酸、微脹」為準，不要按到瘀青或刺痛。</li>
+    <li>避開有傷口、發炎、紅腫的皮膚。<strong>肚臍目前潮濕，神闕暫停</strong>，腹部穴位按壓時也保持肚臍乾燥。</li>
+    <li>懷孕或可能懷孕：<strong>三陰交禁按</strong>，腹部穴位先問醫師。</li>
+    <li>按壓是輔助，不能取代服藥和回診。若按壓後不舒服，請停止並告訴醫師。</li>
+  </ul>
+</section>
+
+<footer>穴位位置以「寸」為單位，指的是你自己的手指寬度：拇指寬約 1 寸、食指到無名指三指併攏約 2 寸、四指併攏約 3 寸。本頁僅供保健參考。</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const GOALS={qi:'健脾補氣',calm:'安神定悸',liver:'疏肝解壓',warm:'溫陽利濕'};
+
+/* ============ 人體雕塑：符號距離場（SDF）+ 平滑融合 ============ */
+const PARTS=[];let G=0; // 分組：0 軀幹頭頸、1/2 右左手臂、3/4 右左腿；組內平滑融合，組間只在接合處小幅融合
+const JOIN=[0,.02,.02,.03,.03];
+function E(c,r,k,sub){PARTS.push({t:0,c,r,k:k||.03,sub:!!sub,g:G});}
+function C(a,b,r1,r2,k,sub){PARTS.push({t:1,a,b,r1,r2,k:k||.03,sub:!!sub,g:G});}
+function both(f){f(1);f(-1);}
+
+// 比例：8 頭身，身高 1.80 m（頭頂 1.80、下巴 1.575、肩關節 1.44、肚臍 1.08、胯下 0.88、膝 0.50、踝 0.085）
+// 軀幹
+E([0,1.29,.012],[.15,.185,.12],.05);               // 胸廓
+E([0,1.1,.016],[.1,.13,.09],.07);            // 腹部
+E([0,.96,-.005],[.132,.095,.098],.06);            // 骨盆
+E([0,1.16,.062],[.062,.14,.042],.04);            // 腹直肌
+both(s=>{
+  E([s*.072,1.365,.092],[.08,.058,.038],.04);   // 胸大肌
+  E([s*.105,1.27,-.04],[.095,.14,.062],.05);    // 背闊肌
+  E([s*.088,1.06,.015],[.034,.08,.06],.05);     // 腹外斜肌
+  E([s*.1,.95,-.01],[.04,.065,.065],.05);       // 臀中肌
+  E([s*.068,.91,-.055],[.078,.085,.068],.04);   // 臀大肌
+  C([s*.03,1.52,-.035],[s*.16,1.465,-.025],.02,.016,.05); // 斜方肌
+  E([s*.1,1.425,-.005],[.09,.052,.072],.045);   // 肩帶（棘上肌，填平鎖骨與斜方肌之間）
+  C([s*.015,1.462,.058],[s*.18,1.468,.008],.009,.011,.025);   // 鎖骨
+});
+// 頸、頭
+C([0,1.44,-.022],[0,1.62,-.004],.047,.042,.035);
+both(s=>C([s*.05,1.63,-.01],[s*.014,1.465,.05],.012,.01,.025)); // 胸鎖乳突肌
+E([0,1.705,-.012],[.075,.095,.095],.03);        // 顱骨
+E([0,1.645,.02],[.058,.07,.068],.04);           // 臉
+E([0,1.605,.028],[.05,.035,.052],.03);          // 下顎
+E([0,1.585,.058],[.022,.018,.018],.02);         // 下巴
+E([0,1.695,.066],[.056,.012,.02],.02);          // 眉骨
+C([0,1.678,.082],[0,1.64,.096],.007,.011,.012); // 鼻
+E([0,1.612,.072],[.021,.008,.01],.008);         // 嘴唇
+both(s=>{
+  E([s*.04,1.655,.056],[.021,.017,.019],.02);   // 顴骨
+  E([s*.075,1.665,-.008],[.011,.027,.017],.008);// 耳
+});
+// 手臂（掌心朝前的解剖姿勢）
+both(s=>{
+  const sh=[s*.19,1.41,-.005],el=[s*.255,1.1,-.012],wr=[s*.298,.85,.012];
+  G=0;
+  E([s*.2,1.38,0],[.05,.085,.058],.05);      // 三角肌
+  G=s>0?1:2;
+  C(sh,el,.047,.036,.03);                       // 上臂
+  E([s*.227,1.28,.022],[.032,.085,.035],.02);    // 二頭肌
+  E([s*.22,1.29,-.032],[.035,.095,.034],.02);  // 三頭肌
+  C(el,wr,.038,.024,.025);                      // 前臂
+  E([s*.268,1.02,.006],[.036,.085,.031],.03);   // 前臂肌群
+  E([s*.31,.8,.014],[.036,.05,.015],.02);       // 手掌
+  E([s*.327,.805,.02],[.018,.028,.014],.012);   // 大魚際
+  C([s*.335,.815,.017],[s*.36,.75,.032],.012,.009,.012); // 拇指
+  [[.288,.69],[.302,.672],[.316,.665],[.33,.673]].forEach(([x,ty])=>C([s*x,.755,.014],[s*x,ty,.02],.0095,.0075,.006)); // 四指
+});
+G=0;
+// 腿
+both(s=>{
+  G=s>0?3:4;
+  C([s*.092,.93,0],[s*.095,.5,.005],.074,.052,.045);       // 大腿
+  E([s*.105,.71,.035],[.064,.15,.056],.04);                 // 股四頭肌
+  E([s*.095,.73,-.035],[.058,.14,.05],.04);              // 大腿後側
+  E([s*.06,.8,0],[.032,.1,.05],.035);                    // 內收肌
+  E([s*.095,.5,.05],[.025,.03,.018],.02);                // 膝蓋骨
+  C([s*.095,.5,.005],[s*.097,.09,-.012],.05,.032,.035);  // 小腿
+  E([s*.08,.37,-.036],[.045,.1,.05],.035);             // 腓腸肌內側頭
+  E([s*.115,.39,-.033],[.04,.09,.045],.035);             // 腓腸肌外側頭
+  E([s*.105,.33,.022],[.028,.11,.025],.03);                // 脛前肌
+  E([s*.074,.088,-.01],[.016,.016,.016],.014);           // 內踝
+  E([s*.12,.078,-.015],[.016,.016,.016],.014);          // 外踝
+  E([s*.097,.038,-.038],[.034,.038,.04],.025);           // 腳跟
+  C([s*.097,.045,-.02],[s*.1,.025,.14],.038,.025,.025);    // 足
+  E([s*.097,.055,.04],[.038,.034,.065],.03);               // 足背
+  E([s*.1,.02,.155],[.038,.019,.03],.018);              // 腳趾
+});
+G=0;
+// 凹陷：眼窩、肚臍、脊椎溝
+both(s=>E([s*.029,1.682,.078],[.015,.009,.011],.01,true));
+E([0,1.08,.1],[.008,.008,.008],.006,true);
+C([0,1.05,-.085],[0,1.3,-.102],.009,.009,.015,true);
+C([0,1.3,-.102],[0,1.46,-.085],.009,.009,.015,true);
+
+PARTS.forEach(P=>{
+  if(P.t===0){P.rmin=Math.min(...P.r);P.x0=P.c[0]-P.r[0];P.x1=P.c[0]+P.r[0];P.y0=P.c[1]-P.r[1];P.y1=P.c[1]+P.r[1];P.z0=P.c[2]-P.r[2];P.z1=P.c[2]+P.r[2];}
+  else{const m=Math.max(P.r1,P.r2);P.bax=P.b[0]-P.a[0];P.bay=P.b[1]-P.a[1];P.baz=P.b[2]-P.a[2];
+    P.l2=P.bax*P.bax+P.bay*P.bay+P.baz*P.baz;P.rr=P.r1-P.r2;P.a2=P.l2-P.rr*P.rr;P.il2=1/P.l2;
+    P.x0=Math.min(P.a[0],P.b[0])-m;P.x1=Math.max(P.a[0],P.b[0])+m;P.y0=Math.min(P.a[1],P.b[1])-m;P.y1=Math.max(P.a[1],P.b[1])+m;P.z0=Math.min(P.a[2],P.b[2])-m;P.z1=Math.max(P.a[2],P.b[2])+m;}
+});
+function ell(P,x,y,z){const r=P.r,a=(x-P.c[0])/r[0],b=(y-P.c[1])/r[1],c=(z-P.c[2])/r[2];const k0=Math.sqrt(a*a+b*b+c*c);const a1=a/r[0],b1=b/r[1],c1=c/r[2];const k1=Math.sqrt(a1*a1+b1*b1+c1*c1);return k1<1e-9?-P.rmin:k0*(k0-1)/k1;}
+function cone(P,x,y,z){
+  const pax=x-P.a[0],pay=y-P.a[1],paz=z-P.a[2];
+  const yy=pax*P.bax+pay*P.bay+paz*P.baz,zz=yy-P.l2;
+  const vx=pax*P.l2-P.bax*yy,vy=pay*P.l2-P.bay*yy,vz=paz*P.l2-P.baz*yy;
+  const x2=vx*vx+vy*vy+vz*vz,y2=yy*yy*P.l2,z2=zz*zz*P.l2;
+  const k=Math.sign(P.rr)*P.rr*P.rr*x2;
+  if(Math.sign(zz)*P.a2*z2>k)return Math.sqrt(x2+z2)*P.il2-P.r2;
+  if(Math.sign(yy)*P.a2*y2<k)return Math.sqrt(x2+y2)*P.il2-P.r1;
+  return (Math.sqrt(x2*P.a2*P.il2)+yy*P.rr)*P.il2-P.r1;
+}
+function smin(a,b,k){const h=Math.max(k-Math.abs(a-b),0)/k;return Math.min(a,b)-h*h*k*.25;}
+function sdf(x,y,z){
+  const dg=[1e9,1e9,1e9,1e9,1e9];
+  for(let i=0;i<PARTS.length;i++){
+    const P=PARTS[i];if(P.sub)continue;
+    const dx=Math.max(P.x0-x,0,x-P.x1),dy=Math.max(P.y0-y,0,y-P.y1),dz=Math.max(P.z0-z,0,z-P.z1);
+    const cur=dg[P.g];
+    if(Math.sqrt(dx*dx+dy*dy+dz*dz)>cur+P.k)continue;
+    dg[P.g]=smin(cur,P.t?cone(P,x,y,z):ell(P,x,y,z),P.k);
+  }
+  let d=dg[0];
+  for(let g=1;g<5;g++)d=smin(d,dg[g],JOIN[g]);
+  for(let i=0;i<PARTS.length;i++){
+    const P=PARTS[i];if(!P.sub)continue;
+    const dx=Math.max(P.x0-x,0,x-P.x1),dy=Math.max(P.y0-y,0,y-P.y1),dz=Math.max(P.z0-z,0,z-P.z1);
+    if(Math.sqrt(dx*dx+dy*dy+dz*dz)>P.k-d)continue;
+    d=-smin(-d,P.t?cone(P,x,y,z):ell(P,x,y,z),P.k);
+  }
+  return d;
+}
+function grad(x,y,z){const e=.0012;const gx=sdf(x+e,y,z)-sdf(x-e,y,z),gy=sdf(x,y+e,z)-sdf(x,y-e,z),gz=sdf(x,y,z+e)-sdf(x,y,z-e);const l=Math.hypot(gx,gy,gz)||1;return[gx/l,gy/l,gz/l];}
+
+/* Surface Nets：把距離場轉成平滑網格 */
+function buildBodyMesh(){
+  const h=.0045,X0=-.4,Y0=-.012,Z0=-.175;
+  const nx=Math.ceil(.8/h)+1,ny=Math.ceil(1.835/h)+1,nz=Math.ceil(.38/h)+1;
+  const sx=1,sy=nx,sz=nx*ny,f=new Float32Array(nx*ny*nz);
+  const B=6,far=Math.sqrt(3)*B*h*.5*2.5+.02;
+  for(let bk=0;bk<nz;bk+=B)for(let bj=0;bj<ny;bj+=B)for(let bi=0;bi<nx;bi+=B){
+    const ie=Math.min(bi+B,nx),je=Math.min(bj+B,ny),ke=Math.min(bk+B,nz);
+    const dc=sdf(X0+(bi+ie-1)*.5*h,Y0+(bj+je-1)*.5*h,Z0+(bk+ke-1)*.5*h),isFar=Math.abs(dc)>far;
+    for(let k=bk;k<ke;k++)for(let j=bj;j<je;j++){let o=bi+j*sy+k*sz;for(let i=bi;i<ie;i++,o++)f[o]=isFar?dc:sdf(X0+i*h,Y0+j*h,Z0+k*h);}
+  }
+  const CO=[[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1],[1,0,1],[0,1,1],[1,1,1]];
+  const ED=[[0,1],[2,3],[4,5],[6,7],[0,2],[1,3],[4,6],[5,7],[0,4],[1,5],[2,6],[3,7]];
+  const co=CO.map(o=>o[0]*sx+o[1]*sy+o[2]*sz);
+  const cell=new Int32Array(nx*ny*nz).fill(-1),pos=[],v=new Float32Array(8);
+  for(let k=0;k<nz-1;k++)for(let j=0;j<ny-1;j++)for(let i=0;i<nx-1;i++){
+    const base=i+j*sy+k*sz;
+    let mask=0;for(let c=0;c<8;c++){v[c]=f[base+co[c]];if(v[c]<0)mask|=1<<c;}
+    if(mask===0||mask===255)continue;
+    let ax=0,ay=0,az=0,n=0;
+    for(const [a,b] of ED){if((v[a]<0)!==(v[b]<0)){const t=v[a]/(v[a]-v[b]);ax+=CO[a][0]+t*(CO[b][0]-CO[a][0]);ay+=CO[a][1]+t*(CO[b][1]-CO[a][1]);az+=CO[a][2]+t*(CO[b][2]-CO[a][2]);n++;}}
+    cell[base]=pos.length/3;pos.push(X0+(i+ax/n)*h,Y0+(j+ay/n)*h,Z0+(k+az/n)*h);
+  }
+  const idx=[];
+  function quad(a,b,c,d,flip){const A=cell[a],Bv=cell[b],Cv=cell[c],D=cell[d];if(A<0||Bv<0||Cv<0||D<0)return;if(flip)idx.push(A,Cv,Bv,A,D,Cv);else idx.push(A,Bv,Cv,A,Cv,D);}
+  for(let k=1;k<nz-1;k++)for(let j=1;j<ny-1;j++)for(let i=1;i<nx-1;i++){
+    const base=i+j*sy+k*sz,f0=f[base];const fl=f0>=0;
+    if((f0<0)!==(f[base+sx]<0))quad(base-sy-sz,base-sz,base,base-sy,fl);
+    if((f0<0)!==(f[base+sy]<0))quad(base-sx-sz,base-sx,base,base-sz,fl);
+    if((f0<0)!==(f[base+sz]<0))quad(base-sx-sy,base-sy,base,base-sx,fl);
+  }
+  const P=new Float32Array(pos),N=new Float32Array(pos.length);
+  for(let i=0;i<P.length;i+=3){const g=grad(P[i],P[i+1],P[i+2]);N[i]=g[0];N[i+1]=g[1];N[i+2]=g[2];}
+  // 確認三角形方向朝外
+  let agree=0;for(let t=0;t<idx.length;t+=Math.max(3,3*Math.floor(idx.length/3/400))){
+    const a=idx[t]*3,b=idx[t+1]*3,c=idx[t+2]*3;
+    const ux=P[b]-P[a],uy=P[b+1]-P[a+1],uz=P[b+2]-P[a+2],wx=P[c]-P[a],wy=P[c+1]-P[a+1],wz=P[c+2]-P[a+2];
+    const cx=uy*wz-uz*wy,cy=uz*wx-ux*wz,cz=ux*wy-uy*wx;agree+=Math.sign(cx*N[a]+cy*N[a+1]+cz*N[a+2]);}
+  const I=new Uint32Array(idx);
+  if(agree<0)for(let t=0;t<I.length;t+=3){const x=I[t+1];I[t+1]=I[t+2];I[t+2]=x;}
+  return {P,N,I};
+}
+function projectToSkin(p,n){
+  const l=Math.hypot(...n);n=n.map(x=>x/l);
+  let x=p[0]+n[0]*.06,y=p[1]+n[1]*.06,z=p[2]+n[2]*.06;
+  for(let i=0;i<80;i++){const d=sdf(x,y,z);if(Math.abs(d)<2e-5)break;x-=n[0]*d;y-=n[1]*d;z-=n[2]*d;}
+  return {p:[x,y,z],n:grad(x,y,z)};
+}
+
+/* ============ 穴位資料（at：體表附近的起點與方向，會自動吸附到皮膚上） ============ */
+const POINTS=[
+ {id:'baihui',name:'百會',code:'GV20',mer:'督脈',goals:['calm','qi'],bi:false,
+  at:()=>({p:[0,1.79,-.01],n:[0,1,0]}),pitch:1.0,dist:1.1,
+  find:'頭頂正中線上，兩耳尖往上連線的交會點。摸起來常有一個小小的凹陷。',
+  how:'用中指指腹輕輕按揉，或用指尖輕敲，1～2 分鐘。',
+  why:'提神、升陽、安神。對應容易疲倦、頭暈、睡不好。',min:2},
+ {id:'neiguan',name:'內關',code:'PC6',mer:'心包經',goals:['calm','liver'],bi:true,
+  at:s=>({p:[s*.291,.892,.008],n:[0,0,1]}),
+  find:'手掌朝上，手腕橫紋往手肘方向 2 寸（食指、中指、無名指三指併攏的寬度），兩條筋之間。',
+  how:'用另一手拇指按揉，左右各 2～3 分鐘。',
+  why:'寧心安神、寬胸理氣。對應心悸、心慌、胸悶、焦慮，也能緩解噁心。',min:3},
+ {id:'shenmen',name:'神門',code:'HT7',mer:'心經',goals:['calm'],bi:true,
+  at:s=>({p:[s*.288,.853,.012],n:[-s*.6,0,.8]}),
+  find:'手腕橫紋靠小指那一側，摸到一條筋，筋的外側凹陷處。',
+  how:'拇指指尖輕按揉，左右各 1～2 分鐘，睡前按效果最好。',
+  why:'安神助眠。對應失眠、多夢、心悸、焦慮。',min:2},
+ {id:'zhongwan',name:'中脘',code:'CV12',mer:'任脈',goals:['qi'],bi:false,
+  at:()=>({p:[0,1.208,0],n:[0,0,1]}),
+  find:'肚臍正上方 4 寸，約是肚臍到胸骨下端的中點。',
+  how:'手掌貼住，順時針輕揉 3～5 分鐘。',
+  why:'健脾和胃。對應食慾差、飯後脹氣、消化不良。',
+  caution:'飯後 1 小時內不要按。',min:4},
+ {id:'shenque',name:'神闕',code:'CV8',mer:'任脈',goals:['warm'],bi:false,caution_pt:true,
+  at:()=>({p:[0,1.08,0],n:[0,0,1]}),
+  find:'就是肚臍中央。',
+  how:'平常適合熱敷或隔物艾灸來溫陽，不直接按壓。',
+  why:'溫陽、健脾，對應怕冷、腹瀉。',
+  alert:'你的肚臍目前潮濕，暫時不要熱敷、艾灸或按壓這裡。先保持清潔乾燥；若有異味、分泌物或紅腫，請先看皮膚科。',min:0},
+ {id:'qihai',name:'氣海',code:'CV6',mer:'任脈',goals:['qi','warm'],bi:false,
+  at:()=>({p:[0,1.032,0],n:[0,0,1]}),
+  find:'肚臍正下方 1.5 寸（約食指、中指兩指併攏的寬度）。',
+  how:'掌心按揉或熱敷 3～5 分鐘。熱敷時不要蓋到肚臍。',
+  why:'補氣。對應容易累、氣短、說話沒力氣。',
+  caution:'孕婦避免。',min:4},
+ {id:'guanyuan',name:'關元',code:'CV4',mer:'任脈',goals:['warm'],bi:false,
+  at:()=>({p:[0,.984,0],n:[0,0,1]}),
+  find:'肚臍正下方 3 寸（四指併攏的寬度）。',
+  how:'以熱敷為主，每次 10～15 分鐘；也可掌心輕揉。艾灸請在醫師指導下進行。',
+  why:'溫陽、補元氣。對應怕冷、手腳冰冷、經期腹部冷痛。',
+  caution:'孕婦避免。熱敷時注意溫度，避免燙傷。',min:5},
+ {id:'zusanli',name:'足三里',code:'ST36',mer:'胃經',goals:['qi'],bi:true,
+  at:s=>({p:[s*.1,.397,0],n:[s*.57,0,.82]}),
+  find:'坐著屈膝，膝蓋外側下方的凹陷（外膝眼）往下 3 寸（四指併攏的寬度），脛骨前緣再往外一橫指。',
+  how:'拇指用力按揉，左右各 3～5 分鐘，會有明顯痠脹感。也很適合熱敷或艾灸。',
+  why:'健脾胃、補氣、增強抵抗力，是最重要的保健穴。對應疲倦、食慾差、容易感冒。',min:4},
+ {id:'yinlingquan',name:'陰陵泉',code:'SP9',mer:'脾經',goals:['warm','qi'],bi:true,
+  at:s=>({p:[s*.095,.455,.005],n:[-s*.94,0,.34]}),view:s=>[-s*.45,0,.9],
+  find:'小腿內側，沿著脛骨內緣往膝蓋方向推，推到轉彎卡住的凹陷處。',
+  how:'拇指按揉，左右各 2～3 分鐘。濕氣重的人通常會特別痠。',
+  why:'健脾利濕。對應水腫、身體沉重、大便偏軟。',min:3},
+ {id:'sanyinjiao',name:'三陰交',code:'SP6',mer:'脾經',goals:['qi','calm'],bi:true,
+  at:s=>({p:[s*.097,.158,-.01],n:[-s*.97,0,-.24]}),view:s=>[-s*.5,0,.87],pitch:.05,
+  find:'內腳踝最高點往上 3 寸（四指併攏的寬度），脛骨內側後緣。',
+  how:'拇指按揉，左右各 2～3 分鐘。',
+  why:'健脾、養血、安神，也能調經。對應睡不好、經期不順、氣血不足。',
+  warn:'懷孕或可能懷孕時禁按。',min:3},
+ {id:'taichong',name:'太衝',code:'LR3',mer:'肝經',goals:['liver'],bi:true,
+  at:s=>({p:[s*.09,.07,.075],n:[0,1,.3]}),pitch:.75,dist:1.1,
+  find:'腳背上，大腳趾和第二腳趾之間的縫往腳背推，推到兩根骨頭交會前的凹陷處。',
+  how:'拇指由輕到重按揉，左右各 2～3 分鐘；壓力大時通常很痛，力道慢慢加。',
+  why:'疏肝解鬱。對應情緒煩躁、壓力大、頭脹、睡前思緒停不下來。',min:3},
+ {id:'pishu',name:'脾俞',code:'BL20',mer:'膀胱經',goals:['qi'],bi:true,
+  at:s=>({p:[s*.045,1.24,0],n:[0,0,-1]}),
+  find:'背部，第 11 胸椎棘突下方，往兩側各 1.5 寸（兩指寬）。約在肋骨最下緣的高度。',
+  how:'需要家人幫忙用拇指按揉 2～3 分鐘，或用熱敷墊熱敷。',
+  why:'健脾益氣。對應消化差、疲倦、四肢無力。',min:3},
+ {id:'shenshu',name:'腎俞',code:'BL23',mer:'膀胱經',goals:['warm'],bi:true,
+  at:s=>({p:[s*.045,1.08,0],n:[0,0,-1]}),
+  find:'腰部，第 2 腰椎棘突下方，往兩側各 1.5 寸，大約和肚臍同一高度。',
+  how:'雙手掌心搓熱後捂住腰部，再上下搓揉 2～3 分鐘；也可熱敷。',
+  why:'溫補腎陽。對應怕冷、腰痠、手腳冰冷、容易水腫。',min:3}
+];
+const byId=Object.fromEntries(POINTS.map(p=>[p.id,p]));
+
+/* ---------- 狀態 ---------- */
+let goal='all', sel=null, selSide=1, gl=null;
+const plist=$('#plist'), detail=$('#detail');
+function matches(pt){return goal==='all'||pt.goals.includes(goal);}
+
+function renderList(){
+  plist.innerHTML=POINTS.map(p=>`<button type="button" class="pbtn${p.caution_pt?' caution':''}${matches(p)?'':' dim'}" data-id="${p.id}" aria-current="${sel===p}"><b>${p.name}</b><small>${p.code} · ${p.mer}</small></button>`).join('');
+}
+plist.addEventListener('click',e=>{const b=e.target.closest('.pbtn');if(b)select(byId[b.dataset.id],1);});
+$('#goals').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  goal=b.dataset.goal;
+  document.querySelectorAll('#goals button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  renderList();
+});
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{
+  select(byId[b.dataset.go],1);
+  $('#stage').scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'});
+}));
+
+/* ---------- 計時器 ---------- */
+const CIRC=2*Math.PI*21;
+let tm={left:0,total:0,id:null,round:1};
+function stopTimer(){clearInterval(tm.id);tm.id=null;}
+function fmt(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function drawTimer(){
+  const fg=$('#trFg'),t=$('#tTime'),btn=$('#tBtn'),cue=$('#tCue');if(!fg)return;
+  fg.style.strokeDashoffset=CIRC*(1-tm.left/tm.total);
+  t.textContent=fmt(tm.left);
+  btn.textContent=tm.id?'暫停':(tm.left<tm.total&&tm.left>0?'繼續':'開始按壓');
+  btn.classList.toggle('on',!!tm.id);
+  if(tm.left<=0){
+    cue.textContent=sel&&sel.bi&&tm.round===1?'完成！換另一側再按一次。':'完成，做得好。';
+    btn.textContent=sel&&sel.bi&&tm.round===1?'按另一側':'再按一次';
+  }else cue.textContent=tm.id?'按 5 秒、放 2 秒，重複；微酸脹即可。':(sel&&sel.bi?`左右各 ${sel.min} 分鐘・第 ${tm.round} 側`:`建議 ${sel.min} 分鐘`);
+}
+function toggleTimer(){
+  if(tm.id){stopTimer();drawTimer();return;}
+  if(tm.left<=0){ if(sel.bi&&tm.round===1){tm.round=2;selSide=-selSide;gl&&gl.focus(sel,selSide);} else tm.round=1; tm.left=tm.total;}
+  let last=performance.now();
+  tm.id=setInterval(()=>{const now=performance.now();tm.left-=(now-last)/1000;last=now;if(tm.left<=0){tm.left=0;stopTimer();}drawTimer();},250);
+  drawTimer();
+}
+
+/* ---------- 說明卡 ---------- */
+function renderDetail(){
+  stopTimer();
+  if(!sel){detail.innerHTML='<p class="empty">點選人體上的亮點，或上方清單中的穴位，查看位置、找法和按法。</p>';return;}
+  const p=sel;
+  tm={left:p.min*60,total:p.min*60,id:null,round:1};
+  detail.innerHTML=`
+   <div class="d-head"><div><h2>${p.name}</h2><p class="d-meta"><span class="mono">${p.code}</span> · ${p.mer} · ${p.bi?'左右各一':'身體正中'}</p></div>
+   <div class="chips">${p.goals.map(g=>`<span class="chip">${GOALS[g]}</span>`).join('')}</div></div>
+   ${p.alert?`<p class="alert">${p.alert}</p>`:''}
+   ${p.warn?`<p class="warn">${p.warn}</p>`:''}
+   <dl class="d-list">
+    <div><dt>怎麼找</dt><dd>${p.find}</dd></div>
+    <div><dt>怎麼按</dt><dd>${p.how}</dd></div>
+    <div><dt>對應你的狀況</dt><dd>${p.why}</dd></div>
+    ${p.caution?`<div><dt>注意</dt><dd>${p.caution}</dd></div>`:''}
+   </dl>
+   ${p.min?`<div class="timer"><svg viewBox="0 0 52 52" aria-hidden="true"><circle class="tr-bg" cx="26" cy="26" r="21"/><circle class="tr-fg" id="trFg" cx="26" cy="26" r="21" stroke-dasharray="${CIRC}" stroke-dashoffset="0"/></svg>
+     <div class="t-txt"><span class="t-time" id="tTime"></span><span class="t-cue" id="tCue"></span></div>
+     <button type="button" class="t-btn" id="tBtn">開始按壓</button></div>`:''}`;
+  const b=$('#tBtn');if(b){b.addEventListener('click',toggleTimer);drawTimer();}
+}
+function select(pt,side){
+  sel=pt;selSide=pt&&pt.bi?(side||1):1;
+  renderList();renderDetail();
+  if(gl)gl.focus(pt,selSide);
+}
+
+/* ============ 3D ============ */
+function init3D(){
+  if(!window.THREE)throw new Error('no three');
+  const T=THREE,stage=$('#stage'),canvas=$('#cv');
+  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  const scene=new T.Scene(),camera=new T.PerspectiveCamera(30,1,.05,50);
+  const root=new T.Group();scene.add(root);
+  const V=(x,y,z=0)=>new T.Vector3(x,y,z);
+
+  /* 全息線框：深色填色 + 沿體表的發光網格 + 邊緣光暈 */
+  const U={
+    uFill:{value:new T.Color('#03151F')},uRim:{value:new T.Color('#1597D1')},uLine:{value:new T.Color('#6FE3FF')},uCell:{value:.03}
+  };
+  const RES=new T.Vector2(1,1);
+  const VS=`varying vec3 vN;varying vec3 vP;varying vec3 vO;varying vec3 vON;
+    void main(){vO=position;vON=normal;vN=normalMatrix*normal;vec4 mv=modelViewMatrix*vec4(position,1.0);vP=mv.xyz;gl_Position=projectionMatrix*mv;}`;
+  const FS=`uniform vec3 uFill;uniform vec3 uRim;uniform vec3 uLine;uniform float uCell;
+    varying vec3 vN;varying vec3 vP;varying vec3 vO;varying vec3 vON;
+    void main(){
+      vec3 n=normalize(vN);if(!gl_FrontFacing)n=-n;
+      vec3 v=normalize(-vP);
+      float fr=pow(1.0-max(dot(n,v),0.0),2.2);
+      vec3 c=uFill+uRim*fr*.5;
+      vec3 an=abs(normalize(vON));
+      vec3 q=vO/uCell;vec3 w=max(fwidth(q),vec3(1e-4));
+      vec3 g=abs(fract(q-.5)-.5)/w;
+      float m=an.y>max(an.x,an.z)?min(g.x,g.z):min(g.y,an.x>an.z?g.z:g.x);
+      float line=1.0-smoothstep(0.0,1.1,m);
+      float glow=exp(-m*.5)*.2;
+      c+=uLine*(line*.75+glow)*(.5+.6*fr);
+      gl_FragColor=vec4(c,1.0);
+    }`;
+  const OVS=`uniform float uW;uniform vec2 uRes;
+    void main(){vec4 mv=modelViewMatrix*vec4(position,1.0);vec3 n=normalize(normalMatrix*normal);mv.z-=.14;vec4 c=projectionMatrix*mv;c.xy+=n.xy*uW*2.0/uRes*c.w;gl_Position=c;}`;
+  const OFS=`uniform vec3 uC;uniform float uA;void main(){gl_FragColor=vec4(uC*uA,uA);}`;
+  const skin=new T.ShaderMaterial({uniforms:U,vertexShader:VS,fragmentShader:FS,extensions:{derivatives:true}});
+  const HULLS=[{c:'#9FF2FF',w:1.3,a:1,add:false},{c:'#27B8F5',w:5,a:.28,add:true},{c:'#1A8FD6',w:12,a:.12,add:true}];
+  const hullMats=HULLS.map(h=>{
+    const m=new T.ShaderMaterial({uniforms:{uC:{value:new T.Color(h.c)},uA:{value:h.a},uW:{value:h.w},uRes:{value:RES}},vertexShader:OVS,fragmentShader:OFS,side:T.BackSide,
+      transparent:h.add,depthWrite:!h.add,blending:h.add?T.AdditiveBlending:T.NormalBlending});
+    m.userData.w=h.w;return m;
+  });
+
+  // 地面陰影
+  const sc=document.createElement('canvas');sc.width=sc.height=128;const sx=sc.getContext('2d');
+  const gr=sx.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(255,255,255,.55)');gr.addColorStop(1,'rgba(255,255,255,0)');sx.fillStyle=gr;sx.fillRect(0,0,128,128);
+  const shadowMat=new T.MeshBasicMaterial({map:new T.CanvasTexture(sc),color:0x2EC5FF,transparent:true,opacity:.55,depthWrite:false,blending:T.AdditiveBlending});
+  const shadow=new T.Mesh(new T.PlaneGeometry(.8,.8),shadowMat);shadow.rotation.x=-Math.PI/2;shadow.position.y=.001;scene.add(shadow);
+  // 穴位光圈貼圖
+  const rc=document.createElement('canvas');rc.width=rc.height=128;const rx=rc.getContext('2d');
+  rx.strokeStyle='#fff';rx.lineWidth=7;rx.beginPath();rx.arc(64,64,52,0,Math.PI*2);rx.stroke();
+  rx.fillStyle='rgba(255,255,255,.18)';rx.beginPath();rx.arc(64,64,48,0,Math.PI*2);rx.fill();
+  const ringTex=new T.CanvasTexture(rc);
+
+  const col={seal:new T.Color('#FF7A5C'),amber:new T.Color('#FFC857'),dim:new T.Color('#2B5569')};
+
+  const markers=[],hits=[];let pending=null;
+  function build(){
+    const {P,N,I}=buildBodyMesh();
+    const geo=new T.BufferGeometry();
+    geo.setAttribute('position',new T.BufferAttribute(P,3));
+    geo.setAttribute('normal',new T.BufferAttribute(N,3));
+    geo.setIndex(new T.BufferAttribute(I,1));
+    geo.computeBoundingSphere();
+    const body=new T.Mesh(geo,skin);hullMats.forEach(m=>{const o=new T.Mesh(geo,m);o.renderOrder=m.transparent?1:0;body.add(o);});root.add(body);
+    const coreGeo=new T.SphereGeometry(.0095,16,12),hitGeo=new T.SphereGeometry(.021,10,8);
+    POINTS.forEach((pt,i)=>(pt.bi?[1,-1]:[1]).forEach(s=>{
+      const a=pt.at(s),sk=projectToSkin(a.p,a.n);
+      const n=V(...sk.n),pos=V(...sk.p).addScaledVector(n,.003);
+      const core=new T.Mesh(coreGeo,new T.MeshBasicMaterial());core.position.copy(pos);
+      const ring=new T.Sprite(new T.SpriteMaterial({map:ringTex,transparent:true,depthTest:false,depthWrite:false}));ring.position.copy(pos);ring.renderOrder=2;
+      const hit=new T.Mesh(hitGeo,new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.copy(pos);
+      const view=pt.view?V(...pt.view(s)).normalize():n;
+      const m={pt,s,pos,n,view,core,ring,phase:i*.7,facing:true};hit.userData.m=m;
+      root.add(core,ring,hit);markers.push(m);hits.push(hit);
+    }));
+    $('#loading').hidden=true;
+    if(pending){focus(...pending);pending=null;}
+  }
+
+  // 鏡頭
+  const FULL={ty:.86,dist:4.05,pitch:.1};
+  let yaw=.5,tYaw=null,pitch=FULL.pitch,tPitch=FULL.pitch,dist=FULL.dist,tDist=FULL.dist,ty=FULL.ty,tTy=FULL.ty,spin=!reduce,dragging=false;
+  const bSpin=$('#bSpin');
+  function setSpin(v){spin=v;bSpin.setAttribute('aria-pressed',v);}
+  setSpin(spin);
+  function near(a){while(a-yaw>Math.PI)a-=2*Math.PI;while(a-yaw<-Math.PI)a+=2*Math.PI;return a;}
+  function focus(pt,s){
+    if(!pt){tYaw=null;tTy=FULL.ty;tDist=FULL.dist;tPitch=FULL.pitch;return;}
+    setSpin(false);
+    if(!markers.length){pending=[pt,s];return;}
+    const m=markers.find(x=>x.pt===pt&&x.s===s)||markers.find(x=>x.pt===pt);
+    tYaw=near(-Math.atan2(m.view.x,m.view.z));
+    tTy=m.pos.y;tDist=pt.dist||1.3;tPitch=pt.pitch!=null?pt.pitch:.12;
+  }
+  $('#bFront').onclick=()=>{tYaw=near(0);};
+  $('#bBack').onclick=()=>{tYaw=near(Math.PI);};
+  $('#bAll').onclick=()=>{select(null);};
+  bSpin.onclick=()=>setSpin(!spin);
+  $('#bIn').onclick=()=>{tDist=Math.max(.7,tDist*.8);};
+  $('#bOut').onclick=()=>{tDist=Math.min(4.4,tDist*1.25);};
+
+  // 點選
+  const ray=new T.Raycaster(),ndc=new T.Vector2();
+  function pick(e){
+    const r=canvas.getBoundingClientRect();
+    ndc.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);
+    ray.setFromCamera(ndc,camera);
+    for(const h of ray.intersectObjects(hits,false)){const m=h.object.userData.m;if(m.facing&&matches(m.pt))return m;}
+    return null;
+  }
+  const tip=$('#tip');let down=null,moved=false;
+  canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,yaw,pitch:tPitch};moved=false;canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener('pointermove',e=>{
+    if(down){
+      const dx=e.clientX-down.x,dy=e.clientY-down.y;
+      if(!moved&&Math.hypot(dx,dy)>4){moved=true;dragging=true;tYaw=null;canvas.classList.add('drag');tip.hidden=true;}
+      if(moved){yaw=down.yaw+dx*.01;if(e.pointerType==='mouse'){tPitch=pitch=Math.max(-.35,Math.min(1.1,down.pitch+dy*.005));}}
+      return;
+    }
+    if(e.pointerType!=='mouse')return;
+    const m=pick(e);canvas.classList.toggle('hover',!!m);
+    if(m){const r=stage.getBoundingClientRect();tip.textContent=m.pt.name;tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px';tip.hidden=false;}else tip.hidden=true;
+  });
+  function end(e,cancel){
+    if(down&&!moved&&!cancel){const m=pick(e);if(m)select(m.pt,m.s);}
+    down=null;dragging=false;canvas.classList.remove('drag');
+  }
+  canvas.addEventListener('pointerup',e=>end(e,false));
+  canvas.addEventListener('pointercancel',e=>end(e,true));
+  canvas.addEventListener('pointerleave',()=>{tip.hidden=true;});
+  canvas.addEventListener('wheel',e=>{e.preventDefault();tDist=Math.max(.7,Math.min(4.4,tDist*(1+e.deltaY*.0012)));},{passive:false});
+
+  function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);renderer.getDrawingBufferSize(RES);hullMats.forEach(m=>{m.uniforms.uW.value=m.userData.w*renderer.getPixelRatio();});camera.aspect=w/h;camera.updateProjectionMatrix();}
+  new ResizeObserver(resize).observe(stage);resize();
+
+  const pin=$('#pin'),wp=V(),wn=V(),toCam=V();
+  let last=performance.now();
+  function frame(now){
+    const dt=Math.min(.05,(now-last)/1000);last=now;
+    const k=1-Math.exp(-dt*5);
+    if(tYaw!==null){yaw+=(tYaw-yaw)*k;if(Math.abs(tYaw-yaw)<.0005)tYaw=null;}
+    else if(spin&&!dragging)yaw+=dt*.35;
+    pitch+=(tPitch-pitch)*k;dist+=(tDist-dist)*k;ty+=(tTy-ty)*k;
+    root.rotation.y=yaw;root.updateMatrixWorld();
+    camera.position.set(0,ty+Math.sin(pitch)*dist,Math.cos(pitch)*dist);camera.lookAt(0,ty,0);
+    const t=now/1000;let selM=null;
+    for(const m of markers){
+      const on=matches(m.pt),isSel=sel===m.pt;
+      if(isSel&&m.s===selSide)selM=m;
+      wp.copy(m.pos).applyMatrix4(root.matrixWorld);wn.copy(m.n).applyQuaternion(root.quaternion);
+      toCam.copy(camera.position).sub(wp).normalize();
+      m.facing=wn.dot(toCam)>.08;
+      const c=!on?col.dim:(m.pt.caution_pt?col.amber:col.seal);
+      m.core.material.color.copy(c);
+      m.core.scale.setScalar(isSel?1.5:1);
+      m.ring.visible=m.facing&&on;
+      m.ring.material.color.copy(c);
+      const pulse=reduce?0:Math.sin(t*3+m.phase)*.5+.5;
+      m.ring.scale.setScalar((isSel?.066:.04)+pulse*(isSel?.02:.012));
+      m.ring.material.opacity=isSel?.95:.55+pulse*.3;
+    }
+    if(selM&&selM.facing){
+      wp.copy(selM.pos).applyMatrix4(root.matrixWorld).project(camera);
+      pin.style.left=((wp.x+1)/2*stage.clientWidth)+'px';pin.style.top=((1-wp.y)/2*stage.clientHeight)+'px';pin.textContent=sel.name;pin.hidden=false;
+    }else pin.hidden=true;
+    renderer.render(scene,camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  requestAnimationFrame(()=>setTimeout(build,30));
+  return {focus};
+}
+
+try{gl=init3D();}catch(e){$('#nogl').hidden=false;$('#cv').hidden=true;$('#loading').hidden=true;}
+select(byId.zusanli,1);
+})();
+</script>
+</body>
+</html>
